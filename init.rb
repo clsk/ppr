@@ -1,7 +1,6 @@
 # encoding: UTF-8
 
 require 'redmine'
-require 'ppr/hooks'
 
 Redmine::Plugin.register :ppr do
   name 'Issue Importer'
@@ -14,3 +13,5 @@ Redmine::Plugin.register :ppr do
   end
   menu :project_menu, :importer, { :controller => 'importer', :action => 'index' }, :caption => :label_import, :before => :settings, :param => :project_id
 end
+
+require 'ppr/hooks/view_users_form'
