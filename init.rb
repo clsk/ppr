@@ -1,6 +1,7 @@
 # encoding: UTF-8
 
 require 'redmine'
+require 'ppr/hooks'
 
 Redmine::Plugin.register :ppr do
   name 'Issue Importer'
