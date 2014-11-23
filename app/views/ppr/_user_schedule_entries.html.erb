@@ -1,24 +1,10 @@
-<% # Inicializando el hash que contiene los dias de la semana. %>
-<% names= {0=> "Sun", 1=> "Mon", 2=> "Tues", 3=> "Wed", 4=> "Thu", 5=> "Fri", 6=> "Sat"} %>
-<% # Busca todas las entradas del usuario. %>
-<% entries= UserScheduleEntry.where(user_id: user.id) %>
-<% days= 0 %>
-<% entries.each do |entry| %>
-    <% days= (days | entry.days_of_week) %>
-<% end %>
-<% # Convierte el entero a la cadena de bit correspondientes. %>
-<% days= days.to_s(2) %>
-<% days= ("0" * (7 - days.length)) + days %>
-
 <fieldset class="box tabular">
     <legend>Schedule</legend>
     <div class="splitcontentleft">
         <div class="splitcontentleft">
-            <% # Por cada dia de la semana imprime un checkbox con las propiedades necesarias. %>
-            <% (0..6).each do |i| %>
-                <% checked= (days[i] == "1" ? true : false) %>
-                <%= check_box_tag "user_schedule_entry_day", (2 ** ((i - 6).abs)), checked, disabled: checked, id: ("user_schedule_entry_day_" + names[i]) %>
-                <%= names[i]  %>
+                <% ['Sun', 'Mon', 'Tues', 'Wed', 'Thu', 'Fri', 'Sat'].each do |day| %>
+                <%= check_box_tag 'day', day, false %>
+                <%= day %>
                 <br>
             <% end %>
         </div>
@@ -31,78 +17,84 @@
     </div>
     <div class="splitcontentright">
         <table id="user_schedule_entries">
-            <% # Por cada entrada imprime una fila con identificador el numero correspondiente a los dias de la semana seleccionados. %>
-            <% entries.each do |entry| %>
-                <%= content_tag :tr, :id=> entry.days_of_week do %>
-                    <%= content_tag :td do %>
-                        <% result= "" %>
-                        <% # Para imprimir los nombres de los dias. %>
-                        <% (0..6).each do |i| %>
-                            <% result+= names[i] + "," if days[i] == "1" %>
-                        <% end %>
-                        <%= result.gsub(/,$/, "") %>
-                    <% end %>
-                    <%= content_tag :td, entry.hours %>
-                    <%= content_tag :td, "X", :class=> "user_schedule_entry_remove_button" %>
-                <% end %>
-            <% end %>
+            <%# user.user_schedule_entries.each do |entry| %>
+                <!--<li><%#= entry.to_s %></li>-->
+            <%# end %>
         </table>
     </div>
 </fieldset>
 <script>
-function GetDaysNames() {
-    return { 0: "Sun", 1: "Mon", 2: "Tues", 3: "Wed", 4: "Thu", 5: "Fri", 6: "Sat" };
+function GetDaysArray() {
+    return ['Sun', 'Mon', 'Tues', 'Wed', 'Thu', 'Fri', 'Sat'];
 }
-function DaysToString(days) {
-    var str_days= days.toString(2);
-    return Array((7 - str_days.length) + 1).join("0") + str_days;
-}
-function AddEntry() {
-    var days= 0;
-    var hours= parseInt($.trim($("#user_schedule_entry_hours").val()));
 
-    $('input[type="checkbox"][name="user_schedule_entry_day"]').each(function () {
-        if($(this).is(":not(:disabled):checked")) {
-            $(this).attr("disabled", true);
-            days+= parseInt($.trim($(this).val()));
+function ScheduleToString(days) {
+    var str= '';
+    var names= GetDaysArray();
+
+    for(var i= 0; i < names.length; i++) {
+        if(days[i] === '1') {
+            str+= names[i] + ',';
+        }
+    }
+
+    return str.replace(/,$/, '');
+}
+
+function AddEntry() {
+    var days= '';
+
+    $('input[type="checkbox"][name="day"]').each(function () {
+        if($(this).is(':not(:disabled):checked')) {
+            days+= '1';
+            $(this).attr('disabled', true);
+        }
+        else {
+            days+= '0';
         }
     });
 
-    if(days > 0 && hours > 0) {
-        var entry= "";
-        var names= GetDaysNames();
-        var str_days= DaysToString(days);
+    var hours= $('#user_schedule_entry_hours');
 
-        for(var i= 0; i < 7; i++) {
-            if(str_days[i] === "1") {
-                entry+= names[i] + ",";
-            }
-        }
+    var entry= '<tr id="' + days + '"><td>' + ScheduleToString(days) + '</td><td>';
+    entry+= parseInt($.trim($(hours).val()));
+    entry+= '</td><td class="user_schedule_entry_remove_button">X</td></tr>';
 
-        entry= '<tr id="' + days + '"><td>' + entry.replace(/,$/, "") + '</td><td>' + hours + '</td><td class="user_schedule_entry_remove_button">X</td></tr>';
+    $(hours).val('');
 
-        $("#user_schedule_entry_hours").val("");
-        $("#user_schedule_entries").append(entry);
-    }
-    else {
-        alert("ERROR WITH SCHEDULE ENTRIES!");
-    }
+    $('#user_schedule_entries').append(entry);
 }
 
-$("#user_schedule_entries").on("click", "td.user_schedule_entry_remove_button", function() {
+$('#user_schedule_entries').on('click', 'td.user_schedule_entry_remove_button', function() {
     var checkbox;
-    var names= GetDaysNames();
-    var tr= $(this).parent("tr");
-    var str_days= DaysToString(parseInt($(tr).attr("id")));
+    var names= GetDaysArray();
 
-    for(var i= 0; i < 7; i++) {
-        if(str_days[i] === '1') {
-            checkbox= $("#user_schedule_entry_day_" + names[i]);
+    var tr= $(this).parent('tr');
+    var days= $(tr).attr('id');
 
-            checkbox.attr("checked", false);
-            checkbox.attr("disabled", false);
+    for(var i= 0; i < names.length; i++) {
+        if(days[i] === '1') {
+            checkbox= $('input[type="checkbox"][name="day"][value="' + names[i] +'"]:disabled');
+
+            checkbox.attr('checked', false);
+            checkbox.attr('disabled', false);
         }
     }
     tr.remove();
+});
+
+$(document).on("click", 'input[name="commit"]', function() {
+    $.ajax({
+                 url: "<%= create2_user_schedule_entry_path(id: 1) %>",
+                type: "GET",
+				dataType: "json",
+                data: { horario: '{ "01100111": "12" }'}, // This goes to Controller in params hash, i.e. params[:file_name]
+             success: function(data, textStatus, xhr) {
+                        alert("Registros actualizados exitosamente");
+                      },
+               error: function() {
+                        alert("Ajax error!")
+                      }
+    });
 });
 </script>
