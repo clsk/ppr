@@ -14,4 +14,4 @@ Redmine::Plugin.register :ppr do
   menu :project_menu, :importer, { :controller => 'importer', :action => 'index' }, :caption => :label_import, :before => :settings, :param => :project_id
 end
 
-require 'ppr/hooks/view_users_form'
+require 'ppr/hooks/user_schedule_entries_hook'
