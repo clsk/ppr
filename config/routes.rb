@@ -8,8 +8,8 @@ resources :user_schedule_entry do
     end
 end
 
-resources :user_schedule_exception_entry do
+resources :user_schedule_exception do
     member do
-        get 'create2'
+        post 'create2'
     end
 end

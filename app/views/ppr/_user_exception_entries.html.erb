@@ -28,12 +28,18 @@ function parseExceptionTime(s) {
     match = s.match(re);
     if (match === null)
         return null;
-    else
-        return { hour: match[1], minute: match[2], m: match[3] };
+
+    var obj =  { hour: match[1], minute: match[2], m: match[3] };
+
+    if (obj.m.toUpperCase() == 'PM' && parseInt(obj.hour) < 12) {
+        obj.hour = Number(parseInt(obj.hour) + 12).toString();
+    }
+
+    return obj;
 }
 
 function validateExceptionTime(t) {
-    if (t.hour < 1 || t.hour > 12) {
+    if (t.hour < 0 || t.hour > 23) {
         return {validated: false, error: 'Hour needs to be between 1 and 12'};
     } else if (t.minute < 0 || t.minute > 59) {
         return {validated: false, error: 'Minute needs to be between 0 and 59'};
@@ -98,15 +104,15 @@ function onAddException() {
         return;
     }
 
-    var start_time_ts = new Date(d.year, d.month, d.day, parseInt(start_time.hour) + (12 ? start_time.m.toUpperCase() == 'PM' : 0), start_time.minute).getTime();
-    var end_time_ts = new Date(d.year, d.month, d.day, parseInt(end_time.hour) + (12 ? end_time.m.toUpperCase() == 'PM' : 0), end_time.minute).getTime();
+    start_time_str = d.year + '-' + d.month + '-' + d.day + ' ' + start_time.hour + ':' + start_time.minute + ':00';
+    end_time_str = d.year + '-' + d.month + '-' + d.day + ' ' + end_time.hour + ':' + end_time.minute + ':00';
 
-    var exception = { user_id: <%= @user.id %>, start_time: start_time_ts, end_time: end_time_ts};
+    var exception = { user_id: <%= @user.id %>, start_time: start_time_str, end_time: end_time_str};
     console.log(exception);
 
     $.ajax({
         type: "POST",
-        url: "<%= create2_user_schedule_exception_entry_path(user_id: @user.id) %>",
+        url: "<%= create2_user_schedule_exception_path(user_id: @user.id) %>",
         data: {exception: exception},
         dataType: "json",
         success: function(data) {
