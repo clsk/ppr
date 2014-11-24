@@ -15,3 +15,4 @@ Redmine::Plugin.register :ppr do
 end
 
 require 'ppr/hooks/user_schedule_entries_hook'
+require 'ppr/hooks/user_exception_entries_hook'

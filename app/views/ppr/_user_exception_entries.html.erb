@@ -1,1 +1,117 @@
+<% unless @user.id.nil? %>
+<fieldset class="box tabular">
+    <legend>Exceptions</legend>
+    <div class="splitcontentleft">
+        <div class="splitcontentleft">
+            Start Time (10:00 AM) <%= text_field_tag 'exception-start-time' %>
+            <br/><br/>
+            End Time (10:00 PM) <%= text_field_tag 'exception-end-time' %>
+        </div>
+        <div class="splitcontentright">
+            Date
+            <%= text_field_tag 'exception-date' %>
+            <br/><br/>
+            <input id="user_exception_entry_add_button" type="button" value="Add Exception" onClick="onAddException()">
 
+        </div>
+    </div>
+    <div class="splitcontentright">
+        <table id="user_schedule_entries">
+        </table>
+    </div>
+</fieldset>
+<script>
+$(document).ready(function() { $('#exception-date').datepicker(); });
+
+function parseExceptionTime(s) {
+    var re = /^(\d?\d):(\d?\d) (am|pm)$/i;
+    match = s.match(re);
+    if (match === null)
+        return null;
+    else
+        return { hour: match[1], minute: match[2], m: match[3] };
+}
+
+function validateExceptionTime(t) {
+    if (t.hour < 1 || t.hour > 12) {
+        return {validated: false, error: 'Hour needs to be between 1 and 12'};
+    } else if (t.minute < 0 || t.minute > 59) {
+        return {validated: false, error: 'Minute needs to be between 0 and 59'};
+    } else {
+        return {validated: true};
+    }
+}
+
+function parseExceptionDate(s) {
+    var re = /^(\d\d\d\d)\/(\d\d)\/(\d\d)$/;
+    match = s.match(re);
+    if (match === null)
+        return null;
+    else
+        return { year: match[1], month: match[2], day: match[3]}
+}
+
+function validateExceptionTime(t) {
+    if (t.month < 1 || t.month > 12) {
+        return {validated: false, error: 'Hour needs to be between 1 and 12'};
+    } else if (t.day < 0 || t.day > 31) {
+        return {validated: false, error: 'Minute needs to be between 0 and 59'};
+    } else {
+        return {validated: true};
+    }
+}
+
+function onAddException() {
+    var start_time = parseExceptionTime(document.getElementById('exception-start-time').value);
+    if (start_time === null) {
+        alert('Format error on Start Time. Format is: HH:MM AM');
+        return;
+    }
+
+    var v = validateExceptionTime(start_time);
+    if (v.validated === false) {
+        alert('Start Time error: ' + v.error);
+    }
+
+    var end_time = parseExceptionTime(document.getElementById('exception-end-time').value);
+    if (start_time === null) {
+        alert('Format error on End Time. Format is: HH:MM AM');
+        return;
+    }
+
+    v = validateExceptionTime(end_time);
+    if (v.validated === false) {
+        alert('End Time error: ' + v.error);
+        return;
+    }
+
+    var d = parseExceptionDate(document.getElementById('exception-date').value);
+    if (d === null) {
+        alert('Format error on Date. Format is: YYYY/MM/DD');
+        return;
+    }
+
+    v = validateExceptionDate(s);
+    if (v.validated === false) {
+        alert('Date error: ' + v.error);
+        return;
+    }
+
+    var exception = { user_id: @user.id, date: d, start_time: start_time, end_time: end_time};
+
+    /* TODO: Make ajax request
+    $.ajax({
+        type: "POST",
+        url: "<%= create2_user_schedule_entry_path(id: @user.id) %>",
+        data: {exception: exception},
+        dataType: "json"
+        success: function(data) {
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert(jqXHR.responseText);
+        }
+    });
+    */
+}
+</script>
+<% end %>
