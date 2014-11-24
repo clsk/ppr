@@ -17,6 +17,17 @@
     </div>
     <div class="splitcontentright">
         <table id="user_schedule_entries">
+            <%
+                user_exceptions = UserScheduleException.where(:user_id => params[:id])
+                user_exceptions.each do |user_exception|
+            %>
+            <tr>
+            <td><%= user_exception.id  %></td>
+            <td><%= user_exception.user_id  %></td>
+            <td><%= user_exception.time_start  %></td>
+            <td><%= user_exception.time_end  %></td>
+            </tr>
+            <% end %>
         </table>
     </div>
 </fieldset>
