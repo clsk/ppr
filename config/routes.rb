@@ -7,3 +7,9 @@ resources :user_schedule_entry do
         get 'create2'
     end
 end
+
+resources :user_schedule_exception_entry do
+    member do
+        get 'create2'
+    end
+end

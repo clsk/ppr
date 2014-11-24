@@ -43,19 +43,19 @@ function validateExceptionTime(t) {
 }
 
 function parseExceptionDate(s) {
-    var re = /^(\d\d\d\d)\/(\d\d)\/(\d\d)$/;
+    var re = /^(\d\d)\/(\d\d)\/(\d\d\d\d)$/;
     match = s.match(re);
     if (match === null)
         return null;
     else
-        return { year: match[1], month: match[2], day: match[3]}
+        return { year: match[3], month: match[1], day: match[2]}
 }
 
-function validateExceptionTime(t) {
+function validateExceptionDate(t) {
     if (t.month < 1 || t.month > 12) {
-        return {validated: false, error: 'Hour needs to be between 1 and 12'};
+        return {validated: false, error: 'Month(' + t.month +') needs to be between 1 and 12'};
     } else if (t.day < 0 || t.day > 31) {
-        return {validated: false, error: 'Minute needs to be between 0 and 59'};
+        return {validated: false, error: 'Day('+ t.day + ' needs to be between 0 and 59'};
     } else {
         return {validated: true};
     }
@@ -79,6 +79,7 @@ function onAddException() {
         return;
     }
 
+
     v = validateExceptionTime(end_time);
     if (v.validated === false) {
         alert('End Time error: ' + v.error);
@@ -91,27 +92,30 @@ function onAddException() {
         return;
     }
 
-    v = validateExceptionDate(s);
+    v = validateExceptionDate(d);
     if (v.validated === false) {
         alert('Date error: ' + v.error);
         return;
     }
 
-    var exception = { user_id: @user.id, date: d, start_time: start_time, end_time: end_time};
+    var start_time_ts = new Date(d.year, d.month, d.day, parseInt(start_time.hour) + (12 ? start_time.m.toUpperCase() == 'PM' : 0), start_time.minute).getTime();
+    var end_time_ts = new Date(d.year, d.month, d.day, parseInt(end_time.hour) + (12 ? end_time.m.toUpperCase() == 'PM' : 0), end_time.minute).getTime();
 
-    /* TODO: Make ajax request
+    var exception = { user_id: <%= @user.id %>, start_time: start_time_ts, end_time: end_time_ts};
+    console.log(exception);
+
     $.ajax({
         type: "POST",
-        url: "<%= create2_user_schedule_entry_path(id: @user.id) %>",
+        url: "<%= create2_user_schedule_exception_entry_path(user_id: @user.id) %>",
         data: {exception: exception},
-        dataType: "json"
+        dataType: "json",
         success: function(data) {
+            console.log(data);
         },
         error: function(jqXHR, textStatus, errorThrown) {
             alert(jqXHR.responseText);
         }
     });
-    */
 }
 </script>
 <% end %>
