@@ -1,100 +1,145 @@
-<fieldset class="box tabular">
+<% # Inicializando las variables %>
+<% days= 0 %>
+<% entries= UserScheduleEntry.where(user_id: user.id) %>
+<% names= ["Sun", "Mon", "Tues", "Wed", "Thu", "Fri", "Sat"] %>
+
+<% # Itera sobre cada entrada que tenga el usuario %>
+<% entries.each do |entry| %>
+    <% days= (days | entry.days_of_week) %>
+<% end %>
+
+<% # Convierte el entero a la cadena de bits correspondiente %>
+<% days= days.to_s(2) %>
+<% days= ("0" * (7 - days.length)) + days %>
+
+<fieldset id="user_schedule_entries_field_set" class="box tabular">
     <legend>Schedule</legend>
     <div class="splitcontentleft">
-        <div class="splitcontentleft">
-                <% ['Sun', 'Mon', 'Tues', 'Wed', 'Thu', 'Fri', 'Sat'].each do |day| %>
-                <%= check_box_tag 'day', day, false %>
-                <%= day %>
-                <br>
-            <% end %>
-        </div>
-        <div class="splitcontentright">
-            <strong>Hours</strong>
-            <input id="user_schedule_entry_hours" type="text" size="4">
+        <% # Imprime un checkbox por cada dia de la semana %>
+        <% # Los dias que ya esten establecidos apareceran desactivados %>
+        <% (0..6).each do |i| %>
+            <% checked= (days[i] == "1" ? true : false) %>
+            <%= check_box_tag "user_schedule_entry_day", (2 ** ((i - 6).abs)), checked, disabled: checked, id: ("user_schedule_entry_day_" + names[i]) %>
+            <%= names[i] %>
             <br>
-            <input id="user_schedule_entry_add_button" type="button" value="Add" onClick="AddEntry()">
-        </div>
+        <% end %>
+        <br>
+        <strong>Hours</strong>
+        <%= text_field_tag "user_schedule_entry_hours_text_box", nil, size: 2 %>
+        <input id="user_schedule_entry_add_button" type="button" value="Add" onClick="AddEntry()">
     </div>
     <div class="splitcontentright">
-        <table id="user_schedule_entries">
-            <%# user.user_schedule_entries.each do |entry| %>
-                <!--<li><%#= entry.to_s %></li>-->
-            <%# end %>
+        <table id="user_schedule_entries_table">
+            <% # Imprime cada entrada del usuario como una fila de la tabla %>
+            <% entries.each do |entry| %>
+                <%= content_tag :tr, :id=> entry.days_of_week do %>
+                    <%= content_tag :td do %>
+                        <% result= "" %>
+                        <% # Concatena los nombres de los dias que sean necesarios %>
+                        <% (0..6).each do |i| %>
+                            <% result+= names[i] + "," if days[i] == "1" %>
+                        <% end %>
+                        <%= result.gsub(/,$/, "") %>
+                    <% end %>
+                    <%= content_tag :td, entry.hours, :class=> "user_schedule_entry_hours" %>
+                    <%= content_tag :td, "X", :class=> "user_schedule_entry_remove_button" %>
+                <% end %>
+            <% end %>
         </table>
     </div>
 </fieldset>
 <script>
-function GetDaysArray() {
-    return ['Sun', 'Mon', 'Tues', 'Wed', 'Thu', 'Fri', 'Sat'];
+//$("#user_form div:nth-child(1)").append($("#user_schedule_entries_field_set"));
+
+function GetDaysNames() {
+    return ["Sun", "Mon", "Tues", "Wed", "Thu", "Fri", "Sat"];
 }
-
-function ScheduleToString(days) {
-    var str= '';
-    var names= GetDaysArray();
-
-    for(var i= 0; i < names.length; i++) {
-        if(days[i] === '1') {
-            str+= names[i] + ',';
-        }
-    }
-
-    return str.replace(/,$/, '');
+function DaysToString(days) {
+    var str_days= days.toString(2);
+    return Array((7 - str_days.length) + 1).join("0") + str_days;
 }
 
 function AddEntry() {
-    var days= '';
+    var days= 0;
+    var hours= parseInt($.trim($("#user_schedule_entry_hours_text_box").val()));
 
-    $('input[type="checkbox"][name="day"]').each(function () {
-        if($(this).is(':not(:disabled):checked')) {
-            days+= '1';
-            $(this).attr('disabled', true);
-        }
-        else {
-            days+= '0';
+    $('input[type="checkbox"][name="user_schedule_entry_day"]').each(function () {
+        if($(this).is(":not(:disabled):checked")) {
+            $(this).attr("disabled", true);
+
+            days+= parseInt($.trim($(this).val()));
         }
     });
 
-    var hours= $('#user_schedule_entry_hours');
+    if(days > 0 && hours > 0) {
+        var entry= "";
+        var names= GetDaysNames();
+        var str_days= DaysToString(days);
 
-    var entry= '<tr id="' + days + '"><td>' + ScheduleToString(days) + '</td><td>';
-    entry+= parseInt($.trim($(hours).val()));
-    entry+= '</td><td class="user_schedule_entry_remove_button">X</td></tr>';
+        for(var i= 0; i < str_days.length; i++) {
+            if(str_days[i] === "1") {
+                entry+= names[i] + ",";
+            }
+        }
 
-    $(hours).val('');
+        entry= '<tr id="' + days + '"><td>' + entry.replace(/,$/, "") + '</td><td class="user_schedule_entry_hours">' + hours + '</td><td class="user_schedule_entry_remove_button">X</td></tr>';
 
-    $('#user_schedule_entries').append(entry);
+        $("#user_schedule_entries_table").append(entry);
+        $("#user_schedule_entry_hours_text_box").val("");
+    }
+    else {
+        alert("Failed adding an entry!");
+    }
 }
 
-$('#user_schedule_entries').on('click', 'td.user_schedule_entry_remove_button', function() {
+$("#user_schedule_entries_table").on("click", "td.user_schedule_entry_remove_button", function() {
     var checkbox;
-    var names= GetDaysArray();
+    var names= GetDaysNames();
+    var tr= $(this).parent("tr");
+    var str_days= DaysToString(parseInt($(tr).attr("id")));
 
-    var tr= $(this).parent('tr');
-    var days= $(tr).attr('id');
+    for(var i= 0; i < str_days.length; i++) {
+        if(str_days[i] === '1') {
+            checkbox= $("#user_schedule_entry_day_" + names[i]);
 
-    for(var i= 0; i < names.length; i++) {
-        if(days[i] === '1') {
-            checkbox= $('input[type="checkbox"][name="day"][value="' + names[i] +'"]:disabled');
-
-            checkbox.attr('checked', false);
-            checkbox.attr('disabled', false);
+            checkbox.attr("checked", false);
+            checkbox.attr("disabled", false);
         }
     }
+
     tr.remove();
+    $("#user_schedule_entry_hours_text_box").val("");
 });
 
-$(document).on("click", 'input[name="commit"]', function() {
-    $.ajax({
-                 url: "<%= create2_user_schedule_entry_path(id: 1) %>",
-                type: "GET",
-				dataType: "json",
-                data: { horario: '{ "01100111": "12" }'}, // This goes to Controller in params hash, i.e. params[:file_name]
-             success: function(data, textStatus, xhr) {
-                        alert("Registros actualizados exitosamente");
-                      },
-               error: function() {
-                        alert("Ajax error!")
-                      }
+function LoadEntries() {
+    var days;
+    var hours;
+    var entries= {};
+
+    $("#user_schedule_entries_table tr").each(function () {
+        days= parseInt($(this).attr("id"));
+        hours= parseInt($(this).children("td.user_schedule_entry_hours").text());
+
+        entries[days]= hours;
     });
+
+    return entries;
+}
+
+$(document).on("click", 'input[name="commit"]', function() {
+    console.log(JSON.stringify(LoadEntries()));
+
+    $.ajax({
+        url: "<%= create2_user_schedule_entry_path(user_id: user.id) %>",
+        type: "GET",
+        dataType: "json",
+        data: { "entries": JSON.stringify(LoadEntries()) }, // This goes to Controller in params hash, i.e. params[:file_name]
+        success: function(data, textStatus, xhr) {
+            alert("Registros actualizados exitosamente");
+        },
+        error: function() {
+            alert("Ajax error!");
+        }
+  });
 });
 </script>
