@@ -136,8 +136,8 @@
 
     $(document).on("click", 'input[name="commit"]', function() {
         $.ajax({
-            url: "<%= create2_user_schedule_entry_path(id: user.id) %>",
-            type: "GET",
+            url: "<%= CreateScheduleEntry_user_schedule_entry_path(id: user.id) %>",
+            type: "POST",
             dataType: "json",
             data: { entries: JSON.stringify(LoadEntries()) },
             complete: function () {},
