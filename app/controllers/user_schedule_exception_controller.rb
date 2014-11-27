@@ -4,6 +4,7 @@ class UserScheduleExceptionController < ApplicationController
         user_exception.time_start = params[:exception][:start_time]
         user_exception.time_end = params[:exception][:end_time]
         user_exception.user_id = params[:user_id]
+		user_exception.comments = params[:exception][:comments]
         user_exception.save
         render :json => 	{
                                 :status => 1,

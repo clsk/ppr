@@ -1,35 +1,51 @@
 <% unless @user.id.nil? %>
 <fieldset class="box tabular">
     <legend>Exceptions</legend>
-    <div class="splitcontentleft">
+    <div class="splitcontentleft" >
+	
         <div class="splitcontentleft">
-            Start Time (10:00 AM) <%= text_field_tag 'exception-start-time' %>
+			Date <%= text_field_tag 'exception-date' %>
+            Start Time (10:00 AM) <%= select_tag "exception-start-time", "<option>8:00 AM</option><option>9:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>12:00 PM</option><option>1:00 PM</option><option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option><option>5:00 PM</option><option>6:00 PM</option><option>7:00 PM</option><option>8:00 PM</option>".html_safe %>
             <br/><br/>
-            End Time (10:00 PM) <%= text_field_tag 'exception-end-time' %>
+            End Time (10:00 PM) <%= select_tag "exception-end-time", "<option>9:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>12:00 PM</option><option>1:00 PM</option><option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option><option>5:00 PM</option><option>6:00 PM</option><option>7:00 PM</option><option>8:00 PM</option><option>9:00 PM</option>".html_safe %>
+			Comments <%= text_area_tag 'exception-comment' %>
+			
+			<input id="user_exception_entry_add_button" type="button" value="Add Exception" onClick="onAddException()">
         </div>
-        <div class="splitcontentright">
-            Date
-            <%= text_field_tag 'exception-date' %>
-            <br/><br/>
-            <input id="user_exception_entry_add_button" type="button" value="Add Exception" onClick="onAddException()">
-
-        </div>
+   
     </div>
-    <div class="splitcontentright">
-        <table id="user_schedule_entries">
-            <%
-                user_exceptions = UserScheduleException.where(:user_id => params[:id])
-                user_exceptions.each do |user_exception|
-            %>
-            <tr>
-            <td><%= user_exception.id  %></td>
-            <td><%= user_exception.user_id  %></td>
-            <td><%= user_exception.time_start  %></td>
-            <td><%= user_exception.time_end  %></td>
-            </tr>
-            <% end %>
+	
+    <div class="splitcontentright" ;  style="float:left; margin-left: -100px;" >
+        <table id="user_schedule_entries";  width="400px";>
+			<thead align="left">
+				<tr>
+				  <th>Id</th>
+				  <th>Date</th>
+				  <th>Start Time</th>
+				  <th>End Time</th>
+				  <th>Comments</th>
+				</tr>
+			</thead>
+			<tbody>
+				<%
+					user_exceptions = UserScheduleException.where(:user_id => params[:id])
+					user_exceptions.each do |user_exception|
+				%>
+					<tr>
+						<td><%= user_exception.id  %></td>
+						<td><%= user_exception.time_start.to_s(:rfc822)[0..15]   %></td>
+						<td><%= user_exception.time_start.to_s(:time)  %></td>
+						<td><%= user_exception.time_end.to_s(:time)  %></td>
+						<td><%= user_exception.comments.to_s[0..30]  %></td>
+					</tr>
+				<% end %>
+			</tbody>
         </table>
+
     </div>
+	<div >
+	
+	</div>
 </fieldset>
 <script>
 $(document).ready(function() { $('#exception-date').datepicker(); });
@@ -114,11 +130,13 @@ function onAddException() {
         alert('Date error: ' + v.error);
         return;
     }
-
+	
+	
     start_time_str = d.year + '-' + d.month + '-' + d.day + ' ' + start_time.hour + ':' + start_time.minute + ':00';
     end_time_str = d.year + '-' + d.month + '-' + d.day + ' ' + end_time.hour + ':' + end_time.minute + ':00';
+	comment_str = document.getElementById('exception-comment').value;
 
-    var exception = { user_id: <%= @user.id %>, start_time: start_time_str, end_time: end_time_str};
+    var exception = { user_id: <%= @user.id %>, start_time: start_time_str, end_time: end_time_str, comments: comment_str};
     console.log(exception);
 
     $.ajax({
