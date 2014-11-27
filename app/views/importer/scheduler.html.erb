@@ -1,0 +1,84 @@
+<% content_for :header_tags do %>
+    <%= stylesheet_link_tag 'importer', :plugin => 'ppr' %>
+<% end %>
+
+<fieldset class="box tabular">
+	<legend>Proyect</legend>
+	<%= @current_proyect.id.to_s + '-)' + @current_proyect.name.to_s%>
+</fieldset>
+
+<fieldset class="box tabular">
+<legend>Csv file name</legend>
+	<% @sample.each do |issue| %>
+			<%= issue["External Id"]%>
+	<% end %>
+	<table class="list">
+		<thead>
+			<tr>
+				<% @header.each do |column| %>
+					<% column[0] = column[0].unpack('U*').pack('U*') if column[0].kind_of?(String) %>
+					<%= content_tag 'td', column[0] %>
+				<% end %>
+			</tr>
+		</thead>
+		<tbody>
+			<% @sample.each do |issue| %>
+			<tr>
+				<% issue.each do |column| %>
+					<% column[1] = column[1].unpack('U*').pack('U*') if column[1].kind_of?(String) %>
+					<%= content_tag 'td', column[1] %>
+				<% end %>
+			</tr>
+			<% end %>
+		</tbody>
+	</table>
+</fieldset>
+
+<fieldset class="box tabular">
+<legend>node testing</legend>
+	<% @aux = @testing_1 %>
+	<% if (@aux.next == nil) %>
+		<p>'is nil'</p>
+	<%end%>
+	<% while (@aux.next != nil) do%>
+		<p><%= @aux.node %></p>
+		<% @aux = @aux.next %>
+	<% end %>
+</fieldset>
+<table>
+  <thead>
+    <tr>
+	  <th>Id</th>
+      <th>User_login</th>
+    </tr>
+  </thead>
+<tbody>
+    <% @users.each do |n|%>
+      <tr>
+		<td><%= n.id %></td>
+        <td><%= n.login %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<table>
+  <thead>
+    <tr>
+	  <th>User_Id</th>
+      <th>day_of_week</th>
+	  <th>Hours</th>
+    </tr>
+  </thead>
+<tbody>
+    <% @entry.each do |n|%>
+      <tr>
+		<td><%= n.user_id %></td>
+        <td><%= n.days_of_week %></td>
+		<td><%= n.hours %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

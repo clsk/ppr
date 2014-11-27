@@ -13,6 +13,14 @@ class Journal < ActiveRecord::Base
   end
 end
 
+class Linked_list
+	def initialize(node)
+		@node = node
+		@next = nil
+	end
+	attr_accessor :node,:next
+end
+
 class ImporterController < ApplicationController
   unloadable
   
@@ -25,6 +33,44 @@ class ImporterController < ApplicationController
   
   def index
   end
+  
+   def scheduler
+	#validar de que el archivo csv no este vacio
+    unless params[:file]
+      flash[:error] = 'You must provide a file !'
+
+      redirect_to importer_index_path(:project_id => @project)
+      return
+    end
+	#-------------------------------------------------------------
+	#variables que se recibe en el form tag del index.html.erb
+	#:file <--archivo csv, :proyect_id , :encoding , :splitter , :wrapper
+	@current_proyect = Project.find(params[:project_id])
+	@users = User.all #obtencion de todos los users de la base de datos
+	@entry = UserScheduleEntry.all #obtencion de todos los horarios
+	
+	#------------------------------------------------------
+	#probando el funcionamiento de la lista enlazada
+	@testing_1 = Linked_list.new("1")
+	@testing_2 = Linked_list.new("2")
+	@testing_3 = Linked_list.new("3")
+	@testing_4 = Linked_list.new("4")
+	@testing_1.next = @testing_2
+	@testing_2.next =  @testing_3
+	@testing_3.next = @testing_4
+	#----------------------------------------------------------------
+	#lectura del csv
+	@csvfile = params[:file].read #obtiene el archivo csv 
+	@sample = []
+	i = 0
+	@x = CSV.new(@csvfile, :headers=>true)
+	@x.to_a.map {|row|
+		@sample[i] = row.to_hash
+		i += 1
+	}
+	@header = @sample[0]
+	#------------------------------------------------------------------
+	end
 
   def match
     # Delete existing iip to ensure there can't be two iips for a user

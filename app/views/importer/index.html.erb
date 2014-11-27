@@ -21,3 +21,16 @@
 	<%= submit_tag l(:button_upload) %>
 <% end %>
 
+<fieldset class="box tabular">
+<legend>Auto Scheduler</legend>
+	<%= form_tag({:action => 'scheduler'}, {:multipart => true}) do %>
+	
+		<%= hidden_field_tag 'project_id', @project.id %>
+		<p><label><%=l(:label_upload_notice)%></label><br/>
+			<%= file_field_tag 'file', :size => 60%></p>
+		<%= submit_tag l(:button_schedule) %>
+		
+	</fieldset>	
+	
+<% end %>
+</fieldset>
