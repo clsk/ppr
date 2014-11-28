@@ -1,6 +1,6 @@
 class UserScheduleEntryController < ApplicationController
 
-    def CreateScheduleEntry
+    def create2
         parsed_json= ActiveSupport::JSON.decode(params[:entries])
 
         UserScheduleEntry.where(:user_id => params[:id]).delete_all

@@ -4,6 +4,6 @@ match '/importer/result', :to => 'importer#result', :via => [:get, :post]
 
 resources :user_schedule_entry do
     member do
-        post 'CreateScheduleEntry'
+        get 'create2'
     end
 end
