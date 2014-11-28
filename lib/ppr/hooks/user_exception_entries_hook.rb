@@ -9,7 +9,7 @@ module PPR
 		#   :issue  => the issue this is edited
 		#   :f      => the form object to create additional fields
 		render_on :view_users_form,
-				  :partial => 'ppr/user_exception_entries'
+				  :partial => 'user/user_exception_entries'
 	end
   end
 end
