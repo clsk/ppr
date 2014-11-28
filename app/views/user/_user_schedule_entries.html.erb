@@ -47,15 +47,13 @@
                             <%= result.gsub(/,$/, "") %>
                         <% end %>
                         <%= content_tag :td, entry.hours, :class=> "user_schedule_entry_hours" %>
-                        <%= content_tag :td, "X", :class=> "user_schedule_entry_remove_button" %>
+                        <%= content_tag :td, image_tag("delete.png"), :class=> "user_schedule_entry_remove_button" %>
                     <% end %>
                 <% end %>
             </table>
         </div>
     </fieldset>
     <script>
-    //$("#user_form div:nth-child(1)").append($("#user_schedule_entries_field_set"));
-
     function GetDaysNames() {
         return ["Sun", "Mon", "Tues", "Wed", "Thu", "Fri", "Sat"];
     }
@@ -93,7 +91,7 @@
                 }
             }
 
-            entry= '<tr id="' + days + '"><td>' + entry.replace(/,$/, "") + '</td><td class="user_schedule_entry_hours">' + hours + '</td><td class="user_schedule_entry_remove_button">X</td></tr>';
+            entry= '<tr id="' + days + '"><td>' + entry.replace(/,$/, "") + '</td><td class="user_schedule_entry_hours">' + hours + '</td><td class="user_schedule_entry_remove_button"><%= image_tag "delete.png" %></td></tr>';
 
             $("#user_schedule_entries_table").append(entry);
             $("#user_schedule_entry_hours_select").val("1");
@@ -135,23 +133,12 @@
     }
 
     $(document).on("click", 'input[name="commit"]', function() {
-        $.ajax({
-            url: "<%= create2_user_schedule_entry_path(id: user.id) %>",
-            type: "GET",
-            dataType: "json",
-            data: { entries: JSON.stringify(LoadEntries()) },
-            complete: function () {},
-            success: function(data, textStatus, xhr) {
-                console.log(data);
-                console.log(textStatus);
-                console.log(xhr);
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.log(textStatus);
-                console.log(jqXHR);
-                console.log(errorThrown);
-            }
-      });
+//    $('input[name="commit"]').click(function () {
+        $.post("<%= test_user_schedule_entry_path(id: user.id) %>", function (data) {
+            console.log(data);
+        }).fail(function () {
+            console.log("error");
+        });
     });
     </script>
 <% end %>
