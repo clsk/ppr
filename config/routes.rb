@@ -7,12 +7,9 @@ resources :user_schedule_entry do
         post 'CreateScheduleEntries'
     end
 end
-<<<<<<< HEAD
 
 resources :user_schedule_exception do
     member do
         post 'create2'
     end
 end
-=======
->>>>>>> user_schedule
