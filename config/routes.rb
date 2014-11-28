@@ -4,12 +4,15 @@ match '/importer/result', :to => 'importer#result', :via => [:get, :post]
 
 resources :user_schedule_entry do
     member do
-        get 'create2'
+        post 'CreateScheduleEntries'
     end
 end
+<<<<<<< HEAD
 
 resources :user_schedule_exception do
     member do
         post 'create2'
     end
 end
+=======
+>>>>>>> user_schedule

@@ -1,4 +1,5 @@
 module PPR
+<<<<<<< HEAD
 	module Hooks
 	  class UserScheduleEntriesHook < Redmine::Hook::ViewListener
 		# This just renders the partial in
@@ -12,4 +13,11 @@ module PPR
 				  :partial => 'user/user_schedule_entries'
 	end
   end
+=======
+    module Hooks
+        class UserScheduleEntriesHook < Redmine::Hook::ViewListener
+            render_on :view_users_form, :partial => 'user/user_schedule_entries'
+        end
+    end
+>>>>>>> user_schedule
 end
