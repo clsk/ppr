@@ -1,15 +1,13 @@
 module PPR
     module Events
-        class ResourceScheduleEvent
-            attr_reader :startdt, :duedt
+        class ResourceScheduleEvent < BaseEvent
+            attr_reader :id, :hours
 
-            def initialize(startdt, duedt)
-                @startdt= startdt
-                @duedt= duedt
-            end
+            def initialize(start_date, due_date, id, hours)
+                super(start_date, due_date)
 
-            def css_classes
-                raise "Not implemented method"
+                @id= id
+                @hours= hours
             end
         end
     end

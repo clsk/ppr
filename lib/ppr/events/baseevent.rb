@@ -1,15 +1,11 @@
 module PPR
     module Events
         class BaseEvent
-            attr_reader :startdt, :duedt
+            attr_reader :start_date, :duedt
 
-            def initialize(startdt, duedt)
-                @startdt= startdt
-                @duedt= duedt
-            end
-
-            def css_classes
-                raise "Not implemented method"
+            def initialize(start_date, due_date)
+                @start_date= start_date
+                @duedt= due_date
             end
         end
     end
