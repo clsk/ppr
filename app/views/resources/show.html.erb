@@ -1,0 +1,12 @@
+<h1>TMM</h1>
+<h2>ResourcesController#show</h2>
+
+<p style="float:right;">
+    <%= link_to_previous_month(@year, @month) %> | <%= link_to_next_month(@year, @month) %>
+</p>
+<% if @calendar %>
+    <%= "Calendar is here" %>
+    <%= @calendar.startdt %>
+<% else %>
+    <%= "Calendar isn't here" %>
+<% end %>
