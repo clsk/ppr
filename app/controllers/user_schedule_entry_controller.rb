@@ -1,9 +1,9 @@
 class UserScheduleEntryController < ApplicationController
 
-    def create2
+    def CreateScheduleEntries
         parsed_json= ActiveSupport::JSON.decode(params[:entries])
 
-        UserScheduleEntry.where(:user_id => params[:id]).delete_all
+        UserScheduleEntry.where(:user_id=> params[:id]).delete_all
     
         parsed_json.each do |d, h|
             user_schedule= UserScheduleEntry.new()
@@ -15,6 +15,6 @@ class UserScheduleEntryController < ApplicationController
             user_schedule.save
         end
 
-        render :json=> { :size => 1 }
+        render :json=> { :success=> true }
     end
 end
