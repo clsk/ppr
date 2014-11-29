@@ -7,6 +7,10 @@ module PPR
                 @start_date= start_date
                 @due_date= due_date
             end
+
+            def color
+                "#d3d3d3"
+            end
         end
     end
 end

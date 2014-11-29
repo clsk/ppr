@@ -1,0 +1,9 @@
+#resources-events tr {
+    height: initial;
+}
+
+#resources-events tr td {
+    width: 35px;
+    font-weight: bold;
+    text-align: center;
+}

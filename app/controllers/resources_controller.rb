@@ -20,6 +20,9 @@ class ResourcesController < ApplicationController
         if params[:selected_columns]
             params[:selected_columns].each do |r|
                 @resources << r.to_i
+                Issue.select("start_date, due_date, sum(estimated_hours) as estimated_hours").where("assigned_to_id = ? and ((start_date between ? and ?) or (due_date between ? and ?))", r.to_i, @calendar.startdt, @calendar.enddt, @calendar.startdt, @calendar.enddt).group("start_date, due_date").each do |i|
+                    events << PPR::Events::ResourceScheduleEvent.new(i.start_date, i.due_date, r.to_i, i.estimated_hours)
+                end
             end
         end
 

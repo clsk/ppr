@@ -47,14 +47,27 @@
                 <% # (day + ((11 - day.cwday) % 7)) Siempre da el jueves de la proxima semana %>
                 <td class="week-number" title="<%= l :label_week %>"><%= (day + ((11 - day.cwday) % 7)).cweek %></td>
             <% end %>
-            <% # Imprime el dia correspondiente, si es el dia pertenece al mes actual lo etiqueta como 'event' %>
-            <% # Si el dia es el dia actual lo etiqueta como 'today' %>
-            <td class="<%= day.month == @calendar.month ? 'even' : 'odd' %><%= ' today' if Date.today == day %>">
+            <% even= day.month == @calendar.month %>
+            <td class="<%= (even) ? 'even' : 'odd' %><%= ' today' if Date.today == day %>">
                 <% # Imprime el numero del dia %>
                 <p class="day-num"><%= day.day %></p>
-                <% # Itera sobre cada evento que exista en este dia %>
-                <% @calendar.events_on(day).each do |i| %>
-                    <% # Aqui va la magia de los eventos %>
+                <% # Si el dia pertenece al mes imprime los eventos de dicho dia %>
+                <% if even %>
+                    <table id="resources-events">
+                        <% # Itera sobre cada evento que exista en este dia %>
+                        <% counter= 0 %>
+                        <% @calendar.events_on(day).each do |e| %>
+                            <% if counter == 0 %>
+                                <tr>
+                            <% end %>
+                            <td class="resource_event_color_<%= e.id %>"><%= e.hours %></td>
+                            <% counter+= 1 %>
+                            <% if counter == 4 %>
+                                </tr>
+                                <% counter= 0 %>
+                            <% end %>
+                        <% end %>
+                    </table>
                 <% end %>
             </td>
             <% # Cierra la fila si es el ultimo dia de la semana(Sabado) %>
@@ -66,3 +79,7 @@
         <% end %>
     </tbody>
 </table>
+<% content_for :header_tags do %>
+    <%= stylesheet_link_tag 'resources', :plugin => 'ppr' %>
+<% end %>
+<% html_title "Resources - Redmine" %>
