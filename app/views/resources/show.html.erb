@@ -1,30 +1,46 @@
+<% # Forma para filtrar la calendarizacion de los recursos %>
 <form id="resources_form" method="get" action="<%= resources_path %>">
-    <% # Filtros permitidos para la calendarizacion de los recursos %>
-    <fieldset id="filters">
+    <fieldset>
         <legend><%= l :label_filter_plural %></legend>
-        <% # Filtro por recurso %>
         <div class="splitcontentleft">
             <%= label_tag "resources", "Resources" %>
-            <select name="selected_columns[]" size="<%= @users.length <= 7 ? @users.length : 7 %>" multiple="multiple" style="width:auto">
-                <% @users.each do |u| %>
-                    <option value="<%= u.id %>" <%= 'selected' if @resources.include? u.id %>><%= "#{u.firstname} #{u.lastname}" %></option>
+            <select name="selected_columns[]" size="<%= @resources.length <= 10 ? @resources.length : 10 %>" multiple="multiple" style="width:auto">
+                <% @resources.each do |k, v| %>
+                    <option value="<%= k %>" <%= 'selected' if v[:selected] %>><%= v[:name] %></option>
                 <% end %>
             </select>
         </div>
-        <% # Filtro por ano y mes %>
-        <div class="splitcontentleft">
-            <%= label_tag "month", l(:label_month) %>
-            <%= select_month @month, :prefix=> "month", :discard_type=> true %>
-            <%= label_tag "year", l(:label_year) %>
-            <%= select_year @year, :prefix=> "year", :start_year=> Date.today.year, :discard_type=> true %>
-
-            <% # Botones para aplicar y limpiar los filtros %>
-            <a href="#" class="icon icon-checked" onclick="$('#resources_form').submit()"><%= l :button_apply %></a>
-            <a href="<%= resources_path %>" class="icon icon-reload"><%= l :button_clear %></a>
+        <div class="splitcontentright">
+            <table id="selected-resources">
+                <thead>
+                    <tr>
+                        <td colspan="2">Selected</td>
+                    </tr>
+                </thead>
+                <% @resources.each do |k, v| %>
+                    <% if v[:selected] %>
+                        <tr>
+                            <td><%= v[:name] %></td>
+                            <td><div class="colour-sphere" style="background-color: <%= v[:colour] %>"></div></td>
+                        </tr>
+                    <% end %>
+                <% end %>
+            </table>
         </div>
     </fieldset>
+    <div style="padding-top: 10px;">
+        <% # Seleccion del mes %>
+        <%= label_tag "month", l(:label_month) %> <%= select_month @month, :prefix=> "month", :discard_type=> true %>
+        <% # Seleccion del anio %>
+        <%= label_tag "year", l(:label_year) %> <%= select_year @year, :prefix=> "year", :start_year=> Date.today.year, :discard_type=> true %>
+        <% # Botones para aplicar y limpiar los filtros %>
+        <a href="#" class="icon icon-checked" onclick="$('#resources_form').submit()"><%= l :button_apply %></a>
+        <a href="<%= resources_path %>" class="icon icon-reload"><%= l :button_clear %></a>
+    </div>
 </form>
-<p style="float:right;"><%= link_to_month(@year, @month, @resources, :previous) %> | <%= link_to_month(@year, @month, @resources, :next) %></p>
+<hr>
+<% # Enlaces para el mes anterior y el mes siguiente %>
+<p style="float:right;"><%= link_to_month(@year, @month, (@resources.keys.select { |k| @resources[k][:selected] }), :previous) %> | <%= link_to_month(@year, @month, (@resources.keys.select { |k| @resources[k][:selected] }), :next) %></p>
 <% # Impresion del calendario %>
 <table class="cal">
     <thead>
@@ -53,14 +69,14 @@
                 <p class="day-num"><%= day.day %></p>
                 <% # Si el dia pertenece al mes imprime los eventos de dicho dia %>
                 <% if even %>
-                    <table id="resources-events">
+                    <table id="events">
                         <% # Itera sobre cada evento que exista en este dia %>
                         <% counter= 0 %>
                         <% @calendar.events_on(day).each do |e| %>
                             <% if counter == 0 %>
                                 <tr>
                             <% end %>
-                            <td class="resource_event_color_<%= e.id %>"><%= e.hours %></td>
+                            <td style="background-color: <%= @resources[e.id][:colour] %>"><%= e.hours %></td>
                             <% counter+= 1 %>
                             <% if counter == 4 %>
                                 </tr>
