@@ -13,7 +13,10 @@ Redmine::Plugin.register :ppr do
     end
 
     menu :project_menu, :importer, { :controller => 'importer', :action => 'index' }, :caption => :label_import, :before => :settings, :param => :project_id
+    menu :top_menu, :resources, { :controller=> 'resources', :action=> 'show' }, :caption=> 'Resources', :if=> Proc.new { User.current.logged? && User.current.admin? }
 end
 
-require 'ppr/hooks/user_schedule_entries_hook'
-require 'ppr/hooks/user_exception_entries_hook'
+require_dependency 'ppr/hooks/user_schedule_entries_hook'
+require_dependency 'ppr/hooks/user_exception_entries_hook'
+require_dependency 'ppr/events/baseevent.rb'
+require_dependency 'ppr/events/resourcescheduleevent.rb'

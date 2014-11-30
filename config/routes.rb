@@ -14,3 +14,5 @@ resources :user_schedule_exception do
 		post 'destroy2'
     end
 end
+
+get '/resources', :to=> 'resources#show'

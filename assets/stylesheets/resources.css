@@ -1,0 +1,29 @@
+#events tr {
+    height: initial;
+}
+
+#events tr td {
+    width: 35px;
+    font-weight: bold;
+    text-align: center;
+}
+
+#selected-resources tr td {
+    border-collapse: collapse;
+    border: 1px solid black;
+}
+
+#selected-resources thead tr td {
+    width: 300px;
+    font-weight: bold;
+    text-align: center;
+}
+
+div.colour-sphere {
+	width: 12px;
+	height: 12px;
+	border-radius: 50px;
+    background-color: black;
+	-moz-border-radius: 50px;
+	-webkit-border-radius: 50px;
+}
