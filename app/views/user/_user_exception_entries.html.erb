@@ -38,9 +38,6 @@
 						<td><%= user_exception.time_end.to_s(:time)  %></td>
 						<td><%= user_exception.comments.to_s[0..30]  %></td>
 						
-						
-						 <!-- <td><input id="user_exception_entry_remove_button" type="submit" value="X" onClick="return confirm('<%= user_exception.id %>')" ></td> -->
-						 <!--<td><input id="user_exception_entry_remove_button" type="submit" value="X" onClick="return onRemException(<%= user_exception.id%>)" ></td> -->
 						 <td><input id="user_exception_entry_remove_button" type="submit" value="X" onClick="onRemException(<%= user_exception.id%>)"></td>
 						 
 					</tr>
