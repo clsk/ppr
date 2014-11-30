@@ -10,7 +10,7 @@
             End Time (10:00 PM) <%= select_tag "exception-end-time", "<option>9:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>12:00 PM</option><option>1:00 PM</option><option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option><option>5:00 PM</option><option>6:00 PM</option><option>7:00 PM</option><option>8:00 PM</option><option>9:00 PM</option>".html_safe %>
 			Comments <%= text_area_tag 'exception-comment' %>
 			
-			<input id="user_exception_entry_add_button" type="button" value="Add Exception" onClick="onAddException()">
+			<input id="user_exception_entry_add_button" type="submit" value="Add Exception" onClick="onAddException()">
         </div>
    
     </div>
@@ -37,6 +37,12 @@
 						<td><%= user_exception.time_start.to_s(:time)  %></td>
 						<td><%= user_exception.time_end.to_s(:time)  %></td>
 						<td><%= user_exception.comments.to_s[0..30]  %></td>
+						
+						
+						 <!-- <td><input id="user_exception_entry_remove_button" type="submit" value="X" onClick="return confirm('<%= user_exception.id %>')" ></td> -->
+						 <!--<td><input id="user_exception_entry_remove_button" type="submit" value="X" onClick="return onRemException(<%= user_exception.id%>)" ></td> -->
+						 <td><input id="user_exception_entry_remove_button" type="submit" value="X" onClick="onRemException(<%= user_exception.id%>)"></td>
+						 
 					</tr>
 				<% end %>
 			</tbody>
@@ -49,6 +55,30 @@
 </fieldset>
 <script>
 $(document).ready(function() { $('#exception-date').datepicker(); });
+
+
+function onRemException(id){
+	if (confirm('delete exception ' + id + ' ?')) {
+	
+		var exception = { user_id: <%= @user.id %>, id: id};
+		$.ajax({
+        type: "POST",
+        url: "<%= destroy2_user_schedule_exception_path(user_id: @user.id) %>",
+        data: {exception: exception},
+        dataType: "json",
+        success: function(data) {
+            console.log(data);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            alert(jqXHR.responseText);
+        }
+    });
+		
+	} else {
+	
+	}
+
+}
 
 function parseExceptionTime(s) {
     var re = /^(\d?\d):(\d?\d) (am|pm)$/i;

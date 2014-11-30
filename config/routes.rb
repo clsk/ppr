@@ -11,5 +11,6 @@ end
 resources :user_schedule_exception do
     member do
         post 'create2'
+		post 'destroy2'
     end
 end
