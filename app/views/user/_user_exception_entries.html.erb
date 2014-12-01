@@ -10,7 +10,6 @@
             End Time (10:00 PM) <%= select_tag "exception-end-time", "<option>9:00 AM</option><option>10:00 AM</option><option>11:00 AM</option><option>12:00 PM</option><option>1:00 PM</option><option>2:00 PM</option><option>3:00 PM</option><option>4:00 PM</option><option>5:00 PM</option><option>6:00 PM</option><option>7:00 PM</option><option>8:00 PM</option><option>9:00 PM</option>".html_safe %>
 			Comments <%= text_area_tag 'exception-comment' %>
 			
-			<input id="user_exception_entry_add_button" type="submit" value="Add Exception" onClick="onAddException()">
         </div>
    
     </div>
@@ -52,7 +51,7 @@ $(document).ready(function() { $('#exception-date').datepicker(); });
 
 
 function onRemException(id){
-	if (confirm('delete exception ' + id + ' ?')) {
+	if (confirm('Are you sure?')) {
 	
 		var exception = { user_id: <%= @user.id %>, id: id};
 		$.ajax({
@@ -118,8 +117,8 @@ function validateExceptionDate(t) {
     }
 }
 
-function onAddException() {
-    var start_time = parseExceptionTime(document.getElementById('exception-start-time').value);
+$(document).on("click", 'input[name="commit"]', function() {
+ var start_time = parseExceptionTime(document.getElementById('exception-start-time').value);
     if (start_time === null) {
         alert('Format error on Start Time. Format is: HH:MM AM');
         return;
@@ -162,19 +161,22 @@ function onAddException() {
 
     var exception = { user_id: <%= @user.id %>, start_time: start_time_str, end_time: end_time_str, comments: comment_str};
     console.log(exception);
-
-    $.ajax({
-        type: "POST",
-        url: "<%= create2_user_schedule_exception_path(user_id: @user.id) %>",
-        data: {exception: exception},
-        dataType: "json",
-        success: function(data) {
-            console.log(data);
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            alert(jqXHR.responseText);
-        }
+	
+        $.ajax({
+			type: "POST",
+			url: "<%= create2_user_schedule_exception_path(user_id: @user.id) %>",
+			data: {exception: exception},
+			dataType: "json",
+			success: function(data) {
+				console.log(data);
+			},
+			error: function(jqXHR, textStatus, errorThrown) {
+				alert(jqXHR.responseText);
+			}
+		});
+		
     });
-}
+
+
 </script>
 <% end %>
