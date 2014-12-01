@@ -44,6 +44,6 @@ module ResourcesHelper
                         previous_month_name(target_year, target_month)
                     end
 
-        link_to name, resources_path(:year=> target_year, :month=> target_month, :selected_columns=> resources), id: "#{target_year}-#{target_month}"
+        link_to name, resources_path(:year=> target_year, :month=> target_month, :resources=> resources), id: "#{target_year}-#{target_month}"
     end
 end
