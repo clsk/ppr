@@ -19,7 +19,6 @@
         <table id="user_schedule_entries";  width="400px";>
 			<thead align="left">
 				<tr>
-				  <th>Id</th>
 				  <th>Date</th>
 				  <th>Start Time</th>
 				  <th>End Time</th>
@@ -32,14 +31,12 @@
 					user_exceptions.each do |user_exception|
 				%>
 					<tr>
-						<td><%= user_exception.id  %></td>
 						<td><%= user_exception.time_start.to_s(:rfc822)[0..15]   %></td>
 						<td><%= user_exception.time_start.to_s(:time)  %></td>
 						<td><%= user_exception.time_end.to_s(:time)  %></td>
 						<td><%= user_exception.comments.to_s[0..30]  %></td>
 						
 						 <td><input id="user_exception_entry_remove_button" type="submit" value="X" onClick="onRemException(<%= user_exception.id%>)"></td>
-						 
 					</tr>
 				<% end %>
 			</tbody>
