@@ -17,3 +17,5 @@ resources :user_schedule_exception do
 end
 
 get '/resources', :to=> 'resources#show'
+
+resources :scheduler
