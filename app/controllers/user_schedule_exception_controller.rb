@@ -11,4 +11,10 @@ class UserScheduleExceptionController < ApplicationController
                                 :exception_id => user_exception.id
                             }
     end
+	def destroy2
+		UserScheduleException.where(:user_id => params[:user_id], id: params[:exception][:id]).delete_all
+        render :json => 	{
+                                :status => 1
+                            }
+	end
 end
