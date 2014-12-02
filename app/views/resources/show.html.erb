@@ -21,10 +21,8 @@
                 </tr>
             </table>
             <hr>
+            <div style="text-align: center;"><strong>Resources</strong></div>
             <table id="resources">
-                <thead>
-                    <tr><td colspan="3"><%= label_tag "resources", "Resources" %></td></tr>
-                <thead>
                 <tbody>
                     <% @resources.each do |k, v| %>
                         <tr id="<%= k %>" <%= "class=selected" if v[:selected] %>>
@@ -80,7 +78,7 @@
                                 <% if counter == 0 %>
                                     <tr>
                                 <% end %>
-                                <td style="background-color: <%= @resources[e.id][:colour] %>"><%= e.hours %></td>
+                                <td style="background-color: <%= @resources[e.id][:colour] %>"><%= "#{ e.hours.to_i }/#{ @resources[e.id][:schedule][day_name day.cwday] }" %></td>
                                 <% counter+= 1 %>
                                 <% if counter == 4 %>
                                     </tr>

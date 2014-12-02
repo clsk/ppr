@@ -9,12 +9,12 @@
 }
 
 div.left-side {
-    width: 18%;
+    width: 12%;
     float: left;
     padding-right: 5px;
 }
 div.right-side {
-    width: 81%;
+    width: 87%;
     float: left;
 }
 
@@ -30,27 +30,9 @@ div.sphere {
 #resources {
     border-collapse: collapse;
 }
-#resources thead tr {
-    width: 225px;
-}
-#resources thead tr td {
-    font-weight: bold;
-    text-align: center;
-}
-#resources tbody tr:hover {
+#resources tr:hover {
     background-color: #c0c0c0;
 }
-#resources tbody tr.selected {
+#resources tr.selected {
     background-color: #e0e0e0;
-}
-
-#selected-resources tr td {
-    border-collapse: collapse;
-    border: 1px solid black;
-}
-
-#selected-resources thead tr td {
-    width: 300px;
-    font-weight: bold;
-    text-align: center;
 }

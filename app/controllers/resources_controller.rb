@@ -26,6 +26,16 @@ class ResourcesController < ApplicationController
                 @resources[r.to_i][:colour]= rand_hex_colour i
                 @resources[r.to_i][:selected]= true
 
+                @resources[r.to_i][:schedule]= {}
+                UserScheduleEntry.where(:user_id=> r.to_i).each do |s|
+                    days= s.days_of_week.to_s(2)
+                    days= ("0" * (7 - days.length)) + days
+
+                    ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"].each_with_index do |d, j|
+                        @resources[r.to_i][:schedule][d]= (days[j] == "1") ? s.hours : 0
+                    end
+                end
+
                 Issue.select("start_date, due_date, sum(estimated_hours) as estimated_hours").where("assigned_to_id = ? and ((start_date between ? and ?) or (due_date between ? and ?))", r.to_i, @calendar.startdt, @calendar.enddt, @calendar.startdt, @calendar.enddt).group("start_date, due_date").each do |i|
                     events << PPR::Events::ResourceScheduleEvent.new(r.to_i, i.estimated_hours, i.start_date, i.due_date)
                 end
