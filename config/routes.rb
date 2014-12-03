@@ -18,4 +18,4 @@ end
 
 get '/resources', :to=> 'resources#show'
 
-resources :scheduler
+resources :ppr_projects
