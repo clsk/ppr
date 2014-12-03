@@ -6,6 +6,7 @@ class CreatePprProjects < ActiveRecord::Migration
       t.string :description
       t.date :start_date
       t.date :end_date
+      t.references :created_by
     end
   end
 end
